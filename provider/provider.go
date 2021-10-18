@@ -99,6 +99,45 @@ func (p *BaseProvider) CreateConfiguration(tmplContent string, funcMap template.
 	return p.DecodeConfiguration(renderedTemplate)
 }
 
+func (p *BaseProvider) GetTemplateConfiguration(defaultTemplate string, funcMap template.FuncMap, templateObjects interface{}) (string, error) {
+	tmplContent, err := p.getTemplateContent(defaultTemplate)
+	if err != nil {
+		return "", err
+	}
+	return p.CreateTemplateConfiguration(tmplContent, funcMap, templateObjects)
+}
+
+func (p *BaseProvider) CreateTemplateConfiguration(tmplContent string, funcMap template.FuncMap, templateObjects interface{}) (string, error) {
+	var defaultFuncMap = sprig.TxtFuncMap()
+	// tolower is deprecated in favor of sprig's lower function
+	defaultFuncMap["tolower"] = strings.ToLower
+	defaultFuncMap["normalize"] = Normalize
+	defaultFuncMap["split"] = split
+	for funcID, funcElement := range funcMap {
+		defaultFuncMap[funcID] = funcElement
+	}
+
+	tmpl := template.New(p.Filename).Funcs(defaultFuncMap)
+
+	_, err := tmpl.Parse(tmplContent)
+	if err != nil {
+		return "", err
+	}
+
+	var buffer bytes.Buffer
+	err = tmpl.Execute(&buffer, templateObjects)
+	if err != nil {
+		return "", err
+	}
+
+	var renderedTemplate = buffer.String()
+	if p.DebugLogGeneratedTemplate {
+		log.Debugf("Template content: %s", tmplContent)
+		log.Debugf("Rendering results: %s", renderedTemplate)
+	}
+	return renderedTemplate, nil
+}
+
 // DecodeConfiguration Decode a *types.Configuration from a content
 func (p *BaseProvider) DecodeConfiguration(content string) (*types.Configuration, error) {
 	configuration := new(types.Configuration)
