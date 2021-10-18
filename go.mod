@@ -1,4 +1,4 @@
-module github.com/traefik/traefik
+module github.com/lippylee/traefik
 
 go 1.16
 
@@ -24,7 +24,7 @@ require (
 	github.com/containous/flaeg v1.4.1
 	github.com/containous/mux v0.0.0-20181024131434-c33f32e26898
 	github.com/containous/staert v3.1.2+incompatible
-	github.com/containous/traefik-extra-service-fabric v1.7.1-0.20210227093100-8dcd57b609a8
+	github.com/lippylee/traefik-extra-service-fabric v1.7.2
 	github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e
 	github.com/davecgh/go-spew v1.1.1
 	github.com/docker/docker v1.4.2-0.20171023200535-7848b8beb9d3
